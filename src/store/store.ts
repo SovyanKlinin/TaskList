@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 
 export const useNewTask = defineStore('modal', {
     state: () => ({
-        cardActive: true
+        cardActive: true,
     }),
     actions: {
         console() {
@@ -11,10 +11,12 @@ export const useNewTask = defineStore('modal', {
 
         open() {
             this.cardActive = true;
+            console.log(this.cardActive);
         },
 
         close() {
             this.cardActive = false;
+            console.log(this.cardActive);
         }
     }
 })

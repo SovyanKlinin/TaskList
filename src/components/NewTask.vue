@@ -1,5 +1,5 @@
 <template>
-    <div class="new-task">
+    <div class="new-task"  v-if="cardActive">
         <div class="new-task__card">
             <div class="new-task__card-title">
                 <div class="new-task__logo">
@@ -17,7 +17,7 @@
                     rows="5"></textarea>
             </div>
             <div class="new-task__close">
-                <button @click="console">
+                <button @click="close">
                     <font-awesome-icon :icon="['fas', 'xmark']" size="xl" />
                 </button>
             </div>
@@ -96,9 +96,9 @@
 import { useNewTask } from './../store/store.ts'
 
 const userStore = useNewTask();
-
-const console = () => {
-    userStore.console();
+const cardActive = userStore.cardActive;
+const close = () => {
+    userStore.close();
 }
 
 </script>

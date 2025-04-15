@@ -8,7 +8,7 @@
     </div>
 
     <ul class="aside__nav">
-      <li class="aside__item">
+      <li class="aside__item" @click="open">
         <div class="aside__item-icon">
           <font-awesome-icon :icon="['fas', 'plus']" />
         </div>
@@ -57,39 +57,45 @@
   }
 
   .aside &__nav {
-  @include mixins.flex;
-  flex-direction: column;
-  gap: 5px;
-  width: 100%;
-
-  & .aside__item {
     @include mixins.flex;
-    justify-content: flex-start;
-    gap: 7px;
+    flex-direction: column;
+    gap: 5px;
     width: 100%;
-    padding: 5px 7px;
-    border: 1px solid #222222;
-    border-radius: 4px;
-    cursor: pointer;
-    list-style: none;
 
-    &:hover {
-      border: 1px solid #646cff;
-    }
+    & .aside__item {
+      @include mixins.flex;
+      justify-content: flex-start;
+      gap: 7px;
+      width: 100%;
+      padding: 5px 7px;
+      border: 1px solid #222222;
+      border-radius: 4px;
+      cursor: pointer;
+      list-style: none;
 
-    &:focus,
-    &:focus-visible {
-      outline: 4px auto -webkit-focus-ring-color;
-    }
+      &:hover {
+        border: 1px solid #646cff;
+      }
 
-    & .aside__item-icon {
-      width: 20px;
+      &:focus,
+      &:focus-visible {
+        outline: 4px auto -webkit-focus-ring-color;
+      }
+
+      & .aside__item-icon {
+        width: 20px;
+      }
     }
   }
-}
 
 }
 </style>
 
 <script setup lang="ts">
+import { useNewTask } from './../store/store.ts'
+
+const userStore = useNewTask();
+const open = () => {
+    userStore.open();
+}
 </script>

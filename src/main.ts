@@ -1,4 +1,5 @@
 import { createApp } from 'vue';
+import { createPinia } from 'pinia';
 import './styles/style.scss'
 import App from './App.vue';
 
@@ -12,8 +13,11 @@ import {
 library.add(faList, faBars, faListCheck, faPlus,
     faClipboardList, faClipboardCheck, faBarsProgress, faXmark);
 
+
+const pinia = createPinia();
 const app = createApp(App);
 
 
 app.component('font-awesome-icon', FontAwesomeIcon);
+app.use(pinia);
 app.mount('#app');
