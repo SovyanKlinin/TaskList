@@ -1,0 +1,33 @@
+@use './mixins.scss';
+
+* {
+  margin: 0;
+  padding: 0;
+  border: none;
+  box-sizing: border-box;
+  transition: 0.3s;
+}
+
+body {
+  @include mixins.body;
+}
+
+a {
+  @include mixins.a;
+}
+
+h1 {
+  @include mixins.h1;
+}
+
+button {
+  @include mixins.button;
+}
+
+input {
+  @include mixins.input;
+}
+
+textarea {
+  @include mixins.textarea;
+}
