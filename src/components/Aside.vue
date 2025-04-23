@@ -8,25 +8,25 @@
     </div>
 
     <ul class="aside__nav">
-      <li class="aside__item" @click="open">
+      <li class="aside__item" @click="open('cardActive')">
         <div class="aside__item-icon">
           <font-awesome-icon :icon="['fas', 'plus']" />
         </div>
         <div class="side__item-title">Добавить задачу</div>
       </li>
-      <li class="aside__item">
+      <li class="aside__item" @click="setFilter('all')">
         <div class="aside__item-icon">
           <font-awesome-icon :icon="['fas', 'clipboard-list']" />
         </div>
         <div class="side__item-title">Все задачи</div>
       </li>
-      <li class="aside__item">
+      <li class="aside__item" @click="setFilter('active')">
         <div class="aside__item-icon">
           <font-awesome-icon :icon="['fas', 'bars-progress']" />
         </div>
         <div class="side__item-title">Активные</div>
       </li>
-      <li class="aside__item">
+      <li class="aside__item" @click="setFilter('completed')">
         <div class="aside__item-icon">
           <font-awesome-icon :icon="['fas', 'clipboard-check']" />
         </div>
@@ -35,6 +35,29 @@
     </ul>
   </aside>
 </template>
+
+<script setup lang="ts">
+import router from '../router';
+import { useNewTask } from '../store/store';
+import { useTask } from '../store/tasks';
+
+const taskStore = useTask();
+const userStore = useNewTask();
+
+const setFilter = (filter: 'all' | 'active' | 'completed') => {
+  taskStore.setFilter(filter);
+  if (filter !== 'all') {
+    router.push(`/${taskStore.filter}`);
+  } else {
+    router.push(`/`);
+  }
+}
+
+const open = (cardState: string) => {
+    userStore.open(cardState);
+    router.push(`/newtask`);
+}
+</script>
 
 <style lang="scss">
 @use './../styles/mixins.scss';
@@ -45,8 +68,8 @@
   justify-content: flex-start;
   align-items: flex-start;
   gap: 40px;
-  height: 100vh;
-  width: 240px;
+  height: 100%;
+  width: 280px;
   padding: 20px;
   background-color: #222222;
 
@@ -90,12 +113,3 @@
 
 }
 </style>
-
-<script setup lang="ts">
-import { useNewTask } from './../store/store.ts'
-
-const userStore = useNewTask();
-const open = () => {
-    userStore.open();
-}
-</script>

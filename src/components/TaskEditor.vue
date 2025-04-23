@@ -1,5 +1,5 @@
 <template>
-    <div class="new-task" v-show="cardActive">
+    <div class="new-task" v-show="cardEditor">
         <div class="new-task__card">
             <div class="new-task__card-title">
                 <div class="new-task__logo">
@@ -7,28 +7,57 @@
                 </div>
                 <h3>Список задач</h3>
             </div>
-            <div class="new-task__title" v-show="!addTask">
+            <div class="new-task__title" v-show="!taskEditCompleted">
                 <label for="task-title">Название задачи:</label>
-                <input v-model="newTaskTitle" name="task-title" id="taskTitle" type="text" placeholder="Введите название задачи">
+                <input name="task-title" id="taskTitle" type="text" placeholder="Введите название задачи"
+                    v-model="taskEdit.taskTitle">
             </div>
-            <div class="new-task__description" v-show="!addTask">
+            <div class="new-task__description" v-show="!taskEditCompleted">
                 <label for="task-description">Описание задачи:</label>
-                <textarea v-model="newTaskDescription" name="task-description" id="taskDescription" placeholder="Введите описание задачи"
-                rows="5"></textarea>
+                <textarea name="task-description" id="taskDescription" placeholder="Введите описание задачи" rows="5"
+                    v-model="taskEdit.taskDescription"></textarea>
             </div>
-            <div class="new-task__button" v-show="!addTask">
-                <div v-show="showError">Заполните форму задачи!</div>
-                <button @click="addNewTask">Добавить задачу</button>
+            <div class="new-task__button" v-show="!taskEditCompleted">
+                <button
+                    @click="newTaskValue(taskEdit.taskId, taskEdit.taskTitle, taskEdit.taskDescription)">Редактировать</button>
             </div>
-                <div v-show="addTask">Задача успешно добавлена!</div>
+            <div v-show="taskEditCompleted">Задача успешно отредактирована!</div>
             <div class="new-task__close">
-                <button @click="close('cardActive')">
+                <button @click="close('cardEditor')">
                     <font-awesome-icon :icon="['fas', 'xmark']" size="xl" />
                 </button>
             </div>
         </div>
     </div>
 </template>
+
+<script setup lang="ts">
+import router from '../router';
+import { storeToRefs } from 'pinia';
+import { useNewTask } from './../store/store';
+import { useTask } from './../store/tasks'
+import { ref } from 'vue';
+
+const userStore = useNewTask();
+const taskStore = useTask();
+
+const { cardEditor } = storeToRefs(userStore);
+const { taskEdit } = storeToRefs(taskStore);
+
+let taskEditCompleted = ref(false);
+
+const newTaskValue = (id: number, title: string, description: string) => {
+    taskStore.newTaskValue(id, title, description)
+    taskEditCompleted.value = true;
+}
+
+const close = (cardState: string) => {
+    taskEditCompleted.value = false;
+    userStore.close(cardState);
+    router.push(`/${taskStore.filter}`);
+}
+
+</script>
 
 <style scoped lang="scss">
 @use './../styles/mixins.scss';
@@ -89,6 +118,7 @@
             justify-content: flex-end;
             gap: 60px;
             width: 100%;
+
             & button {
                 background-color: #222222;
             }
@@ -107,41 +137,3 @@
 
 }
 </style>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { useTask } from '../store/tasks';
-import { useNewTask } from '../store/store';
-import { storeToRefs } from 'pinia';
-import router from '../router';
-
-const userStore = useNewTask();
-const taskStore = useTask();
-
-const { cardActive } = storeToRefs(userStore);
-
-const newTaskTitle = ref('');
-const newTaskDescription = ref('');
-
-let addTask = ref(false);
-let showError = ref(false);
-
-function addNewTask(): void {
-
-    showError.value = true
-
-    if (newTaskTitle.value.trim() && newTaskDescription.value.trim()) {
-        taskStore.addTask(newTaskTitle.value, newTaskDescription.value);
-        newTaskTitle.value = '';
-        newTaskDescription.value = '';
-        addTask.value = true;
-    }
-}
-
-const close = (cardState: string) => {
-    showError.value = false;
-    addTask.value = false;
-    userStore.close(cardState);
-    router.push(`/${taskStore.filter}`);
-}
-</script>

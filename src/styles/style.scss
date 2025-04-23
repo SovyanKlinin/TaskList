@@ -8,6 +8,10 @@
   transition: 0.3s;
 }
 
+#app {
+  width: 100%;
+}
+
 body {
   @include mixins.body;
 }

@@ -2,21 +2,40 @@ import { defineStore } from 'pinia'
 
 export const useNewTask = defineStore('modal', {
     state: () => ({
-        cardActive: true,
+        cardActive: false,
+        cardEditor: false,
     }),
     actions: {
-        console() {
-            console.log(this.cardActive);
+
+        open(cardState: string) {
+            switch (cardState) {
+                case 'cardActive':
+                    this.cardActive = true;
+                    break;
+
+                case 'cardEditor':
+                    this.cardEditor = true;
+                    break;
+
+
+                default:
+                    break;
+            }
         },
 
-        open() {
-            this.cardActive = true;
-            console.log(this.cardActive);
-        },
+        close(cardState: string) {
+            switch (cardState) {
+                case 'cardActive':
+                    this.cardActive = false;
+                    break;
 
-        close() {
-            this.cardActive = false;
-            console.log(this.cardActive);
-        }
+                case 'cardEditor':
+                    this.cardEditor = false;
+                    break;
+
+                default:
+                    break;
+            }
+        },
     }
 })
