@@ -78,7 +78,11 @@ export const useTask = defineStore('tasks', {
                 task.description = description;
                 this.saveTaskToLocalStorage();
             }
-        }
+        },
+
+        updateTaskOrder(newOrder: { id: number; title: string; description: string; completed: boolean }[]) {
+            this.tasks = newOrder;
+          }
 
     },
 
