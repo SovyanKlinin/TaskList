@@ -6,40 +6,29 @@
       </div>
       <h2>Список задач</h2>
     </div>
-
     <ul class="aside__nav">
-      <li class="aside__item" @click="open('cardActive')">
+      <li class="aside__item" @click="handleClick(item)" v-for="item in navItems" :key="item.title">
         <div class="aside__item-icon">
-          <font-awesome-icon :icon="['fas', 'plus']" />
+          <font-awesome-icon :icon="item.icon" />
         </div>
-        <div class="side__item-title">Добавить задачу</div>
-      </li>
-      <li class="aside__item" @click="setFilter('all')">
-        <div class="aside__item-icon">
-          <font-awesome-icon :icon="['fas', 'clipboard-list']" />
-        </div>
-        <div class="side__item-title">Все задачи</div>
-      </li>
-      <li class="aside__item" @click="setFilter('active')">
-        <div class="aside__item-icon">
-          <font-awesome-icon :icon="['fas', 'bars-progress']" />
-        </div>
-        <div class="side__item-title">Активные</div>
-      </li>
-      <li class="aside__item" @click="setFilter('completed')">
-        <div class="aside__item-icon">
-          <font-awesome-icon :icon="['fas', 'clipboard-check']" />
-        </div>
-        <div class="side__item-title">Завершенные</div>
+        <div class="side__item-title">{{ item.title }}</div>
       </li>
     </ul>
   </aside>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
 import router from '../router';
 import { useNewTask } from '../store/store';
 import { useTask } from '../store/tasks';
+
+const open = (cardState: string) => {
+  userStore.open(cardState);
+  router.push({
+      name: 'NewTask',
+    });
+}
 
 const taskStore = useTask();
 const userStore = useNewTask();
@@ -47,16 +36,52 @@ const userStore = useNewTask();
 const setFilter = (filter: 'all' | 'active' | 'completed') => {
   taskStore.setFilter(filter);
   if (filter !== 'all') {
-    router.push(`/${taskStore.filter}`);
+    router.push({
+      name: 'HomeView',
+      query: {filter: taskStore.filter}
+    });
   } else {
-    router.push(`/`);
+    router.push({
+      name: 'HomeView',
+    });
   }
 }
 
-const open = (cardState: string) => {
-    userStore.open(cardState);
-    router.push(`/newtask`);
-}
+const handleClick = (item: any) => {
+  if (item.cardState) {
+    open(item.cardState);
+  }
+  if (item.setFilter) {
+    setFilter(item.setFilter);
+  }
+};
+
+const navItems = ref([
+  {
+    icon: ['fas', 'plus'],
+    title: "Добавить задачу",
+    cardState: 'cardActive'
+  },
+
+  {
+    icon: ['fas', 'clipboard-list'],
+    title: "Все задачи",
+    setFilter: 'all'
+  },
+
+  {
+    icon: ['fas', 'bars-progress'],
+    title: "Активные",
+    setFilter: 'active'
+  },
+
+  {
+    icon: ['fas', 'clipboard-check'],
+    title: "Завершенные",
+    setFilter: 'completed'
+  },
+])
+
 </script>
 
 <style lang="scss">

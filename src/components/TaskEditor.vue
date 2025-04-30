@@ -54,7 +54,16 @@ const newTaskValue = (id: number, title: string, description: string) => {
 const close = (cardState: string) => {
     taskEditCompleted.value = false;
     userStore.close(cardState);
-    router.push(`/${taskStore.filter}`);
+    if (taskStore.filter !== 'all') {
+        router.push({
+            name: 'HomeView',
+            query: { filter: taskStore.filter }
+        });
+    } else {
+        router.push({
+            name: 'HomeView',
+        });
+    }
 }
 
 </script>

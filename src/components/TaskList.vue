@@ -63,7 +63,10 @@ const deleteTask = (id: number) => {
 };
 
 const open = (cardState: string, id: number) => {
-    router.push(`/edit/${id}`)
+    router.push({
+        name: 'TaskEditor',
+        query: {id},
+    });
     userStore.open(cardState);
     taskStore.taskEditor(id);
 }

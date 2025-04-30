@@ -9,18 +9,19 @@
             </div>
             <div class="new-task__title" v-show="!addTask">
                 <label for="task-title">Название задачи:</label>
-                <input v-model="newTaskTitle" name="task-title" id="taskTitle" type="text" placeholder="Введите название задачи">
+                <input v-model="newTaskTitle" name="task-title" id="taskTitle" type="text"
+                    placeholder="Введите название задачи">
             </div>
             <div class="new-task__description" v-show="!addTask">
                 <label for="task-description">Описание задачи:</label>
-                <textarea v-model="newTaskDescription" name="task-description" id="taskDescription" placeholder="Введите описание задачи"
-                rows="5"></textarea>
+                <textarea v-model="newTaskDescription" name="task-description" id="taskDescription"
+                    placeholder="Введите описание задачи" rows="5"></textarea>
             </div>
             <div class="new-task__button" v-show="!addTask">
                 <div v-show="showError">Заполните форму задачи!</div>
                 <button @click="addNewTask">Добавить задачу</button>
             </div>
-                <div v-show="addTask">Задача успешно добавлена!</div>
+            <div v-show="addTask">Задача успешно добавлена!</div>
             <div class="new-task__close">
                 <button @click="close('cardActive')">
                     <font-awesome-icon :icon="['fas', 'xmark']" size="xl" />
@@ -89,6 +90,7 @@
             justify-content: flex-end;
             gap: 60px;
             width: 100%;
+
             & button {
                 background-color: #222222;
             }
@@ -142,6 +144,15 @@ const close = (cardState: string) => {
     showError.value = false;
     addTask.value = false;
     userStore.close(cardState);
-    router.push(`/${taskStore.filter}`);
+    if (taskStore.filter !== 'all') {
+        router.push({
+            name: 'HomeView',
+            query: { filter: taskStore.filter }
+        });
+    } else {
+        router.push({
+            name: 'HomeView',
+        });
+    }
 }
 </script>
