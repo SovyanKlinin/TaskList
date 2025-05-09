@@ -7,6 +7,8 @@ interface Task {
     completed: boolean,
 }
 
+export type FilterType = 'all' | 'active' | 'completed';
+
 export const useTask = defineStore('tasks', {
     state: () => ({
         tasks: [] as Task[],
@@ -16,8 +18,11 @@ export const useTask = defineStore('tasks', {
         taskEdit: {
             taskId: 0,
             taskTitle: '',
-            taskDescription: ''
-        }
+            taskDescription: '',
+        },
+
+    isEdit: false,
+
     }),
 
     actions: {
@@ -70,7 +75,7 @@ export const useTask = defineStore('tasks', {
             }
         },
 
-        newTaskValue(id: number, title: string, description: string) {
+        updateTask(id: number, title: string, description: string) {
             const task = this.tasks.find(task => task.id === id)
             if (task) {
                 task.id = id;
@@ -82,7 +87,7 @@ export const useTask = defineStore('tasks', {
 
         updateTaskOrder(newOrder: { id: number; title: string; description: string; completed: boolean }[]) {
             this.tasks = newOrder;
-          }
+        }
 
     },
 

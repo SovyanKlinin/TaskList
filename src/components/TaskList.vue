@@ -4,7 +4,7 @@
         <h1>{{ title }}</h1>
         <div class="task-list__field">
             <draggable v-model="filteredTask" class="task-list__draggable">
-                <template #item="{ element }" class="task-list__template">
+                <template #item="{ element }">
                     <div class="task-list__item" :key="element.id">
                         <div class="task-list__item-content">
                             <h3 class="task-list__title">Название:</h3>
@@ -19,11 +19,11 @@
                                     @change="toggleTask(element.id)">
                             </div>
                             <div class="task-list__option-item">
-                                <label for="task-active">Завершенная задача</label>
-                                <input type="checkbox" name="task-active" :checked="element.completed"
+                                <label for="task-completed">Завершенная задача</label>
+                                <input type="checkbox" name="task-completed" :checked="element.completed"
                                     @change="toggleTask(element.id)">
                             </div>
-                            <button @click="open('cardEditor', element.id)">Редактировать задачу</button>
+                            <button @click="open('cardActive', element.id)">Редактировать задачу</button>
                             <button @click="deleteTask(element.id)">Удалить задачу</button>
                         </div>
                     </div>
@@ -63,12 +63,13 @@ const deleteTask = (id: number) => {
 };
 
 const open = (cardState: string, id: number) => {
+    userStore.open(cardState);
     router.push({
-        name: 'TaskEditor',
+        name: 'Modal',
         query: {id},
     });
-    userStore.open(cardState);
     taskStore.taskEditor(id);
+    taskStore.isEdit = true;
 }
 </script>
 

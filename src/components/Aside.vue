@@ -11,7 +11,7 @@
         <div class="aside__item-icon">
           <font-awesome-icon :icon="item.icon" />
         </div>
-        <div class="side__item-title">{{ item.title }}</div>
+        <div class="aside__item-title">{{ item.title }}</div>
       </li>
     </ul>
   </aside>
@@ -21,33 +21,36 @@
 import { ref } from 'vue';
 import router from '../router';
 import { useNewTask } from '../store/store';
-import { useTask } from '../store/tasks';
-
-const open = (cardState: string) => {
-  userStore.open(cardState);
-  router.push({
-      name: 'NewTask',
-    });
-}
+import { useTask, type FilterType } from '../store/tasks';
 
 const taskStore = useTask();
 const userStore = useNewTask();
 
-const setFilter = (filter: 'all' | 'active' | 'completed') => {
-  taskStore.setFilter(filter);
-  if (filter !== 'all') {
-    router.push({
-      name: 'HomeView',
-      query: {filter: taskStore.filter}
-    });
-  } else {
-    router.push({
-      name: 'HomeView',
-    });
-  }
+interface NavItem {
+  icon: [string, string],
+  title: string,
+  cardState?: string,
+  setFilter?: 'all' | 'active' | 'completed'
 }
 
-const handleClick = (item: any) => {
+const open = (cardState: string) => {
+  userStore.open(cardState);
+  taskStore.isEdit = false;
+  router.push({
+    name: 'Modal',
+  });
+}
+
+const setFilter = (filter: FilterType) => {
+  taskStore.setFilter(filter);
+  const query = filter !== 'all' ? { filter: taskStore.filter } : undefined;
+  router.push({
+    name: 'HomeView',
+    ...(query && { query })
+  });
+}
+
+const handleClick = (item: NavItem) => {
   if (item.cardState) {
     open(item.cardState);
   }
@@ -56,7 +59,7 @@ const handleClick = (item: any) => {
   }
 };
 
-const navItems = ref([
+const navItems = ref<NavItem[]>([
   {
     icon: ['fas', 'plus'],
     title: "Добавить задачу",

@@ -1,29 +1,30 @@
 <template>
-    <div class="new-task" v-show="cardEditor">
+    <div class="new-task" v-show="cardActive">
         <div class="new-task__card">
             <div class="new-task__card-title">
                 <div class="new-task__logo">
                     <font-awesome-icon :icon="['fas', 'list-check']" size="xl" />
                 </div>
-                <h3>Список задач</h3>
+                <h3>{{ isEdit ? 'Редактировать задачу' : 'Новая задача' }}</h3>
             </div>
-            <div class="new-task__title" v-show="!taskEditCompleted">
+            <div class="new-task__title" v-show="!completed">
                 <label for="task-title">Название задачи:</label>
-                <input name="task-title" id="taskTitle" type="text" placeholder="Введите название задачи"
-                    v-model="taskEdit.taskTitle">
+                <input v-model="taskTitle" name="task-title" id="taskTitle" type="text"
+                    placeholder="Введите название задачи">
             </div>
-            <div class="new-task__description" v-show="!taskEditCompleted">
+            <div class="new-task__description" v-show="!completed">
                 <label for="task-description">Описание задачи:</label>
-                <textarea name="task-description" id="taskDescription" placeholder="Введите описание задачи" rows="5"
-                    v-model="taskEdit.taskDescription"></textarea>
+                <textarea v-model="taskDescription" name="task-description" id="taskDescription"
+                    placeholder="Введите описание задачи" rows="5"></textarea>
             </div>
-            <div class="new-task__button" v-show="!taskEditCompleted">
-                <button
-                    @click="newTaskValue(taskEdit.taskId, taskEdit.taskTitle, taskEdit.taskDescription)">Редактировать</button>
+            <div class="new-task__button" v-show="!completed">
+                <div v-show="showError">Заполните форму задачи!</div>
+                <button @click="NewOrUpdateTask(taskEdit.taskId, taskEdit.taskTitle, taskEdit.taskDescription)">
+                    {{ isEdit ? 'Редактировать' : 'Добавить задачу' }}</button>
             </div>
-            <div v-show="taskEditCompleted">Задача успешно отредактирована!</div>
+            <div v-show="completed">{{ isEdit ? 'Задача успешно отредактирована!' : 'Задача успешно добавлена!'}}</div>
             <div class="new-task__close">
-                <button @click="close('cardEditor')">
+                <button @click="close('cardActive')">
                     <font-awesome-icon :icon="['fas', 'xmark']" size="xl" />
                 </button>
             </div>
@@ -32,27 +33,60 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed } from 'vue';
+import { useTask } from '../store/tasks';
+import { useNewTask } from '../store/store';
 import router from '../router';
 import { storeToRefs } from 'pinia';
-import { useNewTask } from './../store/store';
-import { useTask } from './../store/tasks'
-import { ref } from 'vue';
 
 const userStore = useNewTask();
 const taskStore = useTask();
 
-const { cardEditor } = storeToRefs(userStore);
+const { cardActive } = storeToRefs(userStore);
 const { taskEdit } = storeToRefs(taskStore);
+const isEdit = computed(() => taskStore.isEdit);
 
-let taskEditCompleted = ref(false);
+const newTaskTitle = ref('');
+const newTaskDescription = ref('');
+const taskTitle = ref('');
+const taskDescription = ref('');
 
-const newTaskValue = (id: number, title: string, description: string) => {
-    taskStore.newTaskValue(id, title, description)
-    taskEditCompleted.value = true;
+const completed = ref(false);
+const showError = ref(false);
+
+if (isEdit.value && taskEdit.value) {
+  taskTitle.value = taskEdit.value.taskTitle;
+  taskDescription.value = taskEdit.value.taskDescription;
+} else {
+  taskTitle.value = '';
+  taskDescription.value = '';
+}
+
+function NewOrUpdateTask(id: number, title: string, description: string): void {
+
+    if (isEdit.value) {
+        if (taskTitle.value && taskDescription.value) {
+            taskStore.updateTask(id, title, description)
+            completed.value = true;
+        } else {
+            showError.value = true;
+        }
+    } else {
+        if (taskTitle.value && taskDescription.value) {
+            taskStore.addTask(newTaskTitle.value, newTaskDescription.value);
+            newTaskTitle.value = '';
+            newTaskDescription.value = '';
+            completed.value = true;
+        } else {
+            showError.value = true;
+        }
+    }
 }
 
 const close = (cardState: string) => {
-    taskEditCompleted.value = false;
+    showError.value = false;
+    completed.value = false;
+    taskStore.isEdit = false;
     userStore.close(cardState);
     if (taskStore.filter !== 'all') {
         router.push({
@@ -65,7 +99,6 @@ const close = (cardState: string) => {
         });
     }
 }
-
 </script>
 
 <style scoped lang="scss">
